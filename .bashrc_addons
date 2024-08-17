@@ -1,0 +1,16 @@
+export EDITOR=nvim
+export VISUAL=nvim
+alias vim='nvim'
+
+# Add git branch to status bar if it exists
+parse_git_branch() {
+     git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+# Simple PS1
+export PS1="\[\033[01;34m\]\w \[\e[91m\]\$(parse_git_branch)\[\033[00m\]\$ "
+
+# Start tmux automatically if it's not already running
+if [[ -z "$TMUX" ]]; then
+    tmux attach-session -t default || tmux new-session -s default
+fi
