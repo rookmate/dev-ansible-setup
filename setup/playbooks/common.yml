@@ -1,0 +1,21 @@
+---
+- name: Install essential packages on localhost
+  hosts: localhost
+  become: true
+  vars:
+    packages:
+      - fzf
+      - ripgrep
+      - xclip
+      - jq
+      - tldr
+      - silversearcher-ag
+      - tree
+  tasks:
+    - name: Install packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ packages }}"
+      loop_control:
+        loop_var: item
