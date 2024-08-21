@@ -36,4 +36,4 @@ run_ansible_playbook() {
 
 # Run the Ansible playbook
 echo "Installing essential packages"
-run_ansible_playbook $PLAYBOOK_PATH/common.yml
+run_ansible_playbook $PLAYBOOK_PATH/essentials.yml
