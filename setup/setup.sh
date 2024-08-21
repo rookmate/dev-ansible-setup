@@ -34,6 +34,7 @@ run_ansible_playbook() {
     fi
 }
 
-# Run the Ansible playbook
 echo "Installing essential packages"
 run_ansible_playbook $PLAYBOOK_PATH/essentials.yml
+echo "Installing and configuring tmux"
+run_ansible_playbook $PLAYBOOK_PATH/tmux.yml
