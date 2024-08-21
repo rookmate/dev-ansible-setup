@@ -22,13 +22,18 @@ fi
 
 # Path to your Ansible playbook
 PLAYBOOK_PATH="$SCRIPT_DIR/playbooks"
+run_ansible_playbook() {
+    local playbook_path="$1"
+
+    ansible-playbook "$playbook_path"
+
+    if [ $? -eq 0 ]; then
+        echo "Ansible playbook ran successfully!"
+    else
+        echo "An error occurred running the Ansible playbook."
+    fi
+}
 
 # Run the Ansible playbook
-echo "Installing apps I use..."
-ansible-playbook $PLAYBOOK_PATH/common.yml
-
-if [ $? -eq 0 ]; then
-    echo "Ansible playbooks run successfully!"
-else
-    echo "An error occurred running the Ansible playbooks."
-fi
+echo "Installing essential packages"
+run_ansible_playbook $PLAYBOOK_PATH/common.yml
