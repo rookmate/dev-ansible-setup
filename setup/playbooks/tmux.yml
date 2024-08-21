@@ -1,0 +1,26 @@
+- hosts: localhost
+  tasks:
+    - name: Include global vars
+      ansible.builtin.include_vars:
+        file: globalvars.yml
+
+    - name: Installing tmux
+      become: true
+      ansible.builtin.apt:
+        name: tmux
+        state: present
+        update_cache: yes
+
+    - name: Move .tmux.conf to the home directory
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../.tmux.conf"
+        dest: "{{ home }}/.tmux.conf"
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0644'
+        remote_src: yes
+
+    - name: Remove original .tmux.conf file
+      ansible.builtin.file:
+        path: "{{ playbook_dir }}/../.tmux.conf"
+        state: absent

@@ -1,0 +1,3 @@
+config: "{{ lookup('ansible.builtin.env', 'XDG_CONFIG') }}"
+home: "{{ lookup('ansible.builtin.env', 'HOME') }}"
+user: "ahab"

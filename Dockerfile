@@ -11,7 +11,8 @@ COPY setup /tmp/setup
 RUN chmod +x /tmp/setup/setup.sh
 
 # Run the setup script to install Ansible and its dependencies
+# Also runs all playbooks in the setup folder
 RUN /tmp/setup/setup.sh
 
-# Set default command to bash
-CMD ["/bin/bash"]
+# Start the container with a tmux session
+CMD ["tmux"]
