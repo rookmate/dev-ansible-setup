@@ -94,8 +94,6 @@
       repo: "https://github.com/rookmate/nvim-conf.git"
       dest: "{{ home }}/.config/nvim"
       depth: 1
-    args:
-      creates: "{{ home }}/.config/nvim"
 
   - name: Append .bashrc_addons to .bashrc
     ansible.builtin.copy:
