@@ -13,7 +13,7 @@
 
     - name: Move .tmux.conf to the home directory
       ansible.builtin.copy:
-        src: "{{ playbook_dir }}/../.tmux.conf"
+        src: "{{ playbook_dir }}/../configs/.tmux.conf"
         dest: "{{ home }}/.tmux.conf"
         owner: "{{ user }}"
         group: "{{ user }}"
