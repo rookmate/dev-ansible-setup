@@ -38,3 +38,5 @@ echo "Installing essential packages"
 run_ansible_playbook $PLAYBOOK_PATH/essentials.yml
 echo "Installing and configuring tmux"
 run_ansible_playbook $PLAYBOOK_PATH/tmux.yml
+echo "Installing and configuring neovim and bashrc"
+run_ansible_playbook $PLAYBOOK_PATH/neovim.yml

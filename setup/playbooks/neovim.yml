@@ -1,0 +1,90 @@
+- hosts: localhost
+  tasks:
+
+  - name: Include main vars
+    ansible.builtin.include_vars:
+      file: vars.yml
+
+  - name: Remove old versions of neovim
+    ansible.builtin.file:
+       path: "{{ home }}/neovim"
+       state: absent
+
+  - name: Clone neovim
+    ansible.builtin.git:
+       repo: https://github.com/neovim/neovim.git
+       dest: "{{ home }}/neovim"
+       depth: 1
+       version: stable
+
+  - name: "Install neovim deps"
+    become: true
+    apt:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+      - cmake
+      - gettext
+      - lua5.1
+      - liblua5.1-0-dev
+
+  - name: Neovim Make Install
+    become: true
+    ansible.builtin.command: sudo make install
+    args:
+      chdir: "{{ home }}/neovim"
+
+  - name: Plenary
+    ansible.builtin.git:
+      repo: "https://github.com/nvim-lua/plenary.nvim.git"
+      dest: "{{ home }}/plenary.nvim"
+      depth: 1
+
+  - name: Download Luarocks tar.gz
+    ansible.builtin.get_url:
+      url: https://luarocks.org/releases/luarocks-3.11.0.tar.gz
+      dest: /tmp/luarocks.tar.gz
+
+  - name: Extract Luarocks tar.gz
+    ansible.builtin.unarchive:
+      src: /tmp/luarocks.tar.gz
+      dest: /tmp
+      remote_src: yes
+
+  - name: Install Luarocks (configure, make, make install) locally
+    ansible.builtin.command:
+      cmd: ./configure --prefix=$HOME/.local && make && make install
+      chdir: /tmp/luarocks-3.11.0
+    args:
+      creates: "{{ home }}/.local/bin/luarocks"
+
+  - name: luacheck
+    become: true
+    ansible.builtin.shell:
+      cmd: luarocks install luacheck
+
+  - name: stylua
+    become: true
+    ansible.builtin.shell:
+      cmd: luarocks install stylua
+
+  - name: Clone Personal Repos
+    ansible.builtin.git:
+      repo: "https://github.com/rookmate/nvim-conf.git"
+      dest: "{{ home }}/.config/nvim"
+      depth: 1
+    args:
+      creates: "{{ home }}/.config/nvim"
+
+  - name: Append .bashrc_addons to .bashrc
+    ansible.builtin.copy:
+      src: "{{ playbook_dir }}/../configs/.bashrc_addons"
+      dest: "{{ home }}/.bashrc"
+      owner: "{{ user }}"
+      group: "{{ user }}"
+      mode: '0644'
+      content: "{{ lookup('file', './.bashrc_addons') }}"
+      backup: yes
+    args:
+      append: yes
