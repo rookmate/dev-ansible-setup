@@ -20,7 +20,7 @@ WORKDIR /home/rookmate
 
 # Run the setup script to install Ansible and its dependencies
 # Also runs all playbooks in the setup folder
-RUN /tmp/setup/setup.sh
+RUN sudo -E /tmp/setup/setup.sh
 
 # Start the container with a tmux session
 CMD ["tmux"]
