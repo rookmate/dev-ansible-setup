@@ -28,6 +28,7 @@
       - gettext
       - lua5.1
       - liblua5.1-0-dev
+      - unzip
 
   - name: Neovim Make Install
     become: true
@@ -53,21 +54,40 @@
       remote_src: yes
 
   - name: Install Luarocks (configure, make, make install) locally
-    ansible.builtin.command:
-      cmd: ./configure --prefix=$HOME/.local && make && make install
+    ansible.builtin.shell:
+      cmd: "./configure --prefix=$HOME/.local && make && make install"
       chdir: /tmp/luarocks-3.11.0
     args:
+      executable: /bin/bash
       creates: "{{ home }}/.local/bin/luarocks"
 
   - name: luacheck
-    become: true
     ansible.builtin.shell:
-      cmd: luarocks install luacheck
+      cmd: $HOME/.local/bin/luarocks install luacheck
 
-  - name: stylua
-    become: true
-    ansible.builtin.shell:
-      cmd: luarocks install stylua
+  - name: Create bin directory
+    ansible.builtin.file:
+      path: "{{ home }}/.local/bin"
+      state: directory
+      mode: '0755'
+
+  - name: Download stylua
+    ansible.builtin.get_url:
+      url: "https://github.com/JohnnyMorganz/StyLua/releases/latest/download/stylua-linux-x86_64.zip"
+      dest: "/tmp/stylua.zip"
+      mode: '0644'
+
+  - name: Unzip stylua
+    ansible.builtin.unarchive:
+      src: "/tmp/stylua.zip"
+      dest: "{{ home }}/.local/bin"
+      remote_src: yes
+      mode: '0755'
+
+  - name: Clean up stylua zip
+    ansible.builtin.file:
+      path: "/tmp/stylua.zip"
+      state: absent
 
   - name: Clone Personal Repos
     ansible.builtin.git:
