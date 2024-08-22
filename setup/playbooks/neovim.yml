@@ -3,7 +3,7 @@
 
   - name: Include main vars
     ansible.builtin.include_vars:
-      file: vars.yml
+      file: globalvars.yml
 
   - name: Remove old versions of neovim
     ansible.builtin.file:
