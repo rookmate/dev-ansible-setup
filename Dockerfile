@@ -4,11 +4,19 @@ FROM ubuntu:22.04
 # Set environment variables to avoid prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy the setup folder into the container
-COPY setup /tmp/setup
+# Install sudo
+RUN apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
 
-# Make the script executable
+# Create a non-root user and add to sudo group
+RUN useradd -m -s /bin/bash rookmate && \
+    usermod -aG sudo rookmate && \
+    echo "rookmate ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+COPY setup /tmp/setup
 RUN chmod +x /tmp/setup/setup.sh
+
+USER rookmate
+WORKDIR /home/rookmate
 
 # Run the setup script to install Ansible and its dependencies
 # Also runs all playbooks in the setup folder
