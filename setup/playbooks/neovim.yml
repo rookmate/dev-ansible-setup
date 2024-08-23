@@ -29,18 +29,14 @@
       - lua5.1
       - liblua5.1-0-dev
       - unzip
+      - wget
+      - curl
 
   - name: Neovim Make Install
     become: true
-    ansible.builtin.command: sudo make install
+    ansible.builtin.command: make install
     args:
       chdir: "{{ home }}/neovim"
-
-  - name: Plenary
-    ansible.builtin.git:
-      repo: "https://github.com/nvim-lua/plenary.nvim.git"
-      dest: "{{ home }}/plenary.nvim"
-      depth: 1
 
   - name: Download Luarocks tar.gz
     ansible.builtin.get_url:
@@ -96,13 +92,10 @@
       depth: 1
 
   - name: Append .bashrc_addons to .bashrc
-    ansible.builtin.copy:
-      src: "{{ playbook_dir }}/../configs/.bashrc_addons"
-      dest: "{{ home }}/.bashrc"
+    ansible.builtin.blockinfile:
+      path: "{{ home }}/.bashrc"
       owner: "{{ user }}"
       group: "{{ user }}"
       mode: '0644'
-      content: "{{ lookup('file', './.bashrc_addons') }}"
+      block: "{{ lookup('file', playbook_dir + '/../configs/.bashrc_addons') }}"
       backup: yes
-    args:
-      append: yes
