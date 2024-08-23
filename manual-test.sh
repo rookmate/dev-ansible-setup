@@ -24,4 +24,4 @@ done
 
 echo "Building ansible test image"
 docker build -t ansible_test -f Dockerfile .
-docker run -it ansible_test bash
+docker run -it ansible_test
