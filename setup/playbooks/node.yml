@@ -1,0 +1,64 @@
+- name: Install FNM and Node.js
+  hosts: localhost
+  vars:
+    fnm_dir: "{{ home }}/.local/share/fnm"
+    fnm_init: 'eval "$({{ fnm_dir }}/fnm env)"'
+
+  tasks:
+    - name: Include global variables
+      ansible.builtin.include_vars:
+        file: globalvars.yml
+
+    - name: Install FNM (Fast Node Manager)
+      shell: |
+        curl -fsSL https://fnm.vercel.app/install | bash
+      args:
+        creates: "{{ fnm_dir }}"
+
+    - name: Add FNM initialization to .bashrc
+      lineinfile:
+        path: "{{ home }}/.bashrc"
+        regexp: '^eval "\$\(fnm env\)"$'
+        line: '{{ fnm_init }}'
+        insertafter: 'EOF'
+
+    - name: Source FNM initialization and install Node.js 20
+      shell: |
+        {{ fnm_init }}
+        {{ fnm_dir }}/fnm use --install-if-missing 20
+      args:
+        executable: /bin/bash
+
+    - name: Source FNM initialization and verify Node.js version
+      shell: |
+        {{ fnm_init }}
+        node -v
+      args:
+        executable: /bin/bash
+      register: node_version
+
+    - name: Source FNM initialization and verify npm version
+      shell: |
+        {{ fnm_init }}
+        npm -v
+      args:
+        executable: /bin/bash
+      register: npm_version
+
+    - name: Display installed versions
+      debug:
+        msg:
+          - "Node.js version: {{ node_version.stdout }}"
+          - "npm version: {{ npm_version.stdout }}"
+
+    - name: Verify Node.js version
+      assert:
+        that:
+          - "'v20' in node_version.stdout"
+        fail_msg: "Unexpected Node.js version. Got {{ node_version.stdout }}"
+
+    - name: Verify npm version
+      assert:
+        that:
+          - "'10.' in npm_version.stdout"
+        fail_msg: "Unexpected npm version. Got {{ npm_version.stdout }}"
