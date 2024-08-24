@@ -20,3 +20,27 @@
       loop: "{{ packages }}"
       loop_control:
         loop_var: item
+
+    - name: Include global variables
+      ansible.builtin.include_vars:
+        file: globalvars.yml
+
+    - name: Set Git global user.name
+      ansible.builtin.command:
+        cmd: git config --global user.name "{{ user_name }}"
+
+    - name: Set Git global user.email
+      ansible.builtin.command:
+        cmd: git config --global user.email "{{ user_email }}"
+
+    - name: Verify Git global configuration
+      ansible.builtin.shell: |
+        git config --global --get user.name
+        git config --global --get user.email
+      register: git_config
+
+    - name: Display Git configuration
+      debug:
+        msg:
+          - "Git user.name: {{ git_config.stdout_lines[0] }}"
+          - "Git user.email: {{ git_config.stdout_lines[1] }}"
