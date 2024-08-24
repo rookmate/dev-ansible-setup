@@ -1,0 +1,39 @@
+- name: Install Foundry and Solidity LSPs
+  hosts: localhost
+  vars:
+    foundry_dir: "{{ home }}/.foundry/bin"
+
+  tasks:
+    - name: Include global variables
+      ansible.builtin.include_vars:
+        file: globalvars.yml
+
+    - name: Install foundryup
+      shell: |
+        curl -L https://foundry.paradigm.xyz | bash
+      args:
+        creates: "{{ foundry_dir }}"
+
+    - name: Install Foundry
+      shell: |
+        {{ foundry_dir }}/foundryup
+      args:
+        executable: /bin/bash
+
+    - name: Validate that forge is installed and working
+      shell: |
+        {{ foundry_dir }}/forge -V
+      args:
+        executable: /bin/bash
+      register: forge_version
+      failed_when: forge_version.rc != 0
+
+    - name: Display Forge version
+      debug:
+        msg: "Forge version: {{ forge_version.stdout }}"
+
+    - name: Install Solidity LSP
+      shell: |
+        npm install @nomicfoundation/solidity-language-server -g
+      args:
+        executable: /bin/bash
