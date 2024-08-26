@@ -1,7 +1,6 @@
 ---
 - name: Install essential packages on localhost
   hosts: localhost
-  become: true
   vars:
     packages:
       - fzf
@@ -14,6 +13,7 @@
       - git
   tasks:
     - name: Install packages
+      become: true
       apt:
         name: "{{ item }}"
         state: present
