@@ -26,12 +26,10 @@
         file: globalvars.yml
 
     - name: Set Git global user.name
-      ansible.builtin.command:
-        cmd: git config --global user.name "{{ user_name }}"
+      ansible.builtin.shell: git config --global user.name "{{ user }}"
 
     - name: Set Git global user.email
-      ansible.builtin.command:
-        cmd: git config --global user.email "{{ user_email }}"
+      ansible.builtin.shell: git config --global user.email "{{ email }}"
 
     - name: Verify Git global configuration
       ansible.builtin.shell: |

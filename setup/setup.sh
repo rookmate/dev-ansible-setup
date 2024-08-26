@@ -44,3 +44,5 @@ echo "Installing node and npm"
 run_ansible_playbook $PLAYBOOK_PATH/node.yml
 echo "Installing foundry and solidity LSP"
 run_ansible_playbook $PLAYBOOK_PATH/solidity.yml
+
+echo "Finished running setup"
